@@ -42,7 +42,7 @@ command to change data for powershell (windows)
 
 You can update wheelchair availability for a specific bus using its ID, or for any bus on a route:
 
-### Method 1: Update by Bus ID (Recommended)
+### Update by Bus ID (Recommended)
 
 Update a specific bus by its unique ID:
 
@@ -54,19 +54,11 @@ curl -Method POST http://localhost:3000/api/buses/wheelchair -ContentType "appli
 curl -Method POST http://localhost:3000/api/buses/wheelchair -ContentType "application/json" -Body '{"id":"E2-003","wheelchair_available":false}'
 ```
 
-### Method 2: Update by Route (Finds First Matching Bus)
-
-Update the first bus matching a route and optional destination:
-
-```powershell
-# Update first E1 bus going to Bray
-curl -Method POST http://localhost:3000/api/buses/wheelchair -ContentType "application/json" -Body '{"route":"E1","destination":"Bray","wheelchair_available":true}'
 ```
 
 **Note:** 
 - Bus IDs follow the pattern: `{ROUTE}-{NUMBER}` (e.g., `E1-001`, `E2-003`, `29A-005`)
-- Using bus ID is recommended when you want to update a specific bus
-- When using route/destination, it updates the first matching bus found
+
 
 ## Update Seat Availability
 
@@ -85,27 +77,19 @@ curl -Method POST http://localhost:3000/api/buses/seats -ContentType "applicatio
 curl -Method POST http://localhost:3000/api/buses/seats -ContentType "application/json" -Body '{"id":"E2-003","set_all_available":false}'
 ```
 
-#### By Route
-```powershell
-# Set all seats to available (finds first matching bus)
-curl -Method POST http://localhost:3000/api/buses/seats -ContentType "application/json" -Body '{"route":"E1","destination":"Bray","set_all_available":true}'
-```
+
 
 ### Method 2: Update Specific Seats
 
 Update individual seats by providing their IDs:
 
-#### By Bus ID (Recommended)
+#### By Bus ID 
 ```powershell
 # Update specific seats on bus E1-001
 curl -Method POST http://localhost:3000/api/buses/seats -ContentType "application/json" -Body '{"id":"E1-001","seats":[{"id":"E1-001-SEAT-1","available":false},{"id":"E1-001-SEAT-2","available":true},{"id":"E1-001-SEAT-3","available":false}]}'
 ```
 
-#### By Route
-```powershell
-# Update specific seats (finds first matching bus)
-curl -Method POST http://localhost:3000/api/buses/seats -ContentType "application/json" -Body '{"route":"E1","destination":"Bray","seats":[{"id":"E1-001-SEAT-1","available":false},{"id":"E1-001-SEAT-2","available":true}]}'
-```
+
 
 **Note:** 
 - Bus IDs follow the pattern: `{ROUTE}-{NUMBER}` (e.g., `E1-001`, `E2-003`, `29A-005`)
