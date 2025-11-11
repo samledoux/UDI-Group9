@@ -7,14 +7,24 @@ export function getAllBuses(): BusInfo[] {
 }
 
 export function updateWheelchairAvailability(params: {
-  route: string;
+  id?: string;
+  route?: string;
   destination?: string;
   wheelchair_available: boolean;
 }): BusInfo | null {
-  const { route, destination, wheelchair_available } = params;
-  const index = buses.findIndex((b) =>
-    destination ? b.route === route && b.destination === destination : b.route === route
-  );
+  const { id, route, destination, wheelchair_available } = params;
+  let index = -1;
+  
+  // If ID is provided, use it for lookup (most specific)
+  if (id) {
+    index = buses.findIndex((b) => b.id === id);
+  } else if (route) {
+    // Fallback to route + destination lookup (backward compatibility)
+    index = buses.findIndex((b) =>
+      destination ? b.route === route && b.destination === destination : b.route === route
+    );
+  }
+  
   if (index === -1) {
     return null;
   }
@@ -23,15 +33,25 @@ export function updateWheelchairAvailability(params: {
 }
 
 export function updateSeats(params: {
-  route: string;
+  id?: string;
+  route?: string;
   destination?: string;
   seats?: { id: string; available: boolean }[];
   set_all_available?: boolean;
 }): BusInfo | null {
-  const { route, destination, seats, set_all_available } = params;
-  const index = buses.findIndex((b) =>
-    destination ? b.route === route && b.destination === destination : b.route === route
-  );
+  const { id, route, destination, seats, set_all_available } = params;
+  let index = -1;
+  
+  // If ID is provided, use it for lookup (most specific)
+  if (id) {
+    index = buses.findIndex((b) => b.id === id);
+  } else if (route) {
+    // Fallback to route + destination lookup (backward compatibility)
+    index = buses.findIndex((b) =>
+      destination ? b.route === route && b.destination === destination : b.route === route
+    );
+  }
+  
   if (index === -1) return null;
 
   let updatedSeats = buses[index].seats;

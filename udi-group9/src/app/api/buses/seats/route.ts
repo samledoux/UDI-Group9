@@ -2,16 +2,17 @@ import { NextResponse } from "next/server";
 import { updateSeats } from "../../../../server/busStore";
 
 // POST body options:
-// { route: string, destination?: string, seats: {id: string, available: boolean}[] }
+// { id?: string, route?: string, destination?: string, seats: {id: string, available: boolean}[] }
 // OR
-// { route: string, destination?: string, set_all_available: boolean }
+// { id?: string, route?: string, destination?: string, set_all_available: boolean }
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { route, destination, seats, set_all_available } = body ?? {};
+    const { id, route, destination, seats, set_all_available } = body ?? {};
 
-    if (typeof route !== "string") {
-      return NextResponse.json({ error: "route must be a string" }, { status: 400 });
+    // Either id or route must be provided
+    if (!id && typeof route !== "string") {
+      return NextResponse.json({ error: "Either 'id' or 'route' must be provided" }, { status: 400 });
     }
     const hasSeatArray = Array.isArray(seats);
     const hasToggleAll = typeof set_all_available === "boolean";
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
       }
     }
 
-    const updated = updateSeats({ route, destination, seats, set_all_available });
+    const updated = updateSeats({ id, route, destination, seats, set_all_available });
     if (!updated) {
       return NextResponse.json({ error: "Bus not found" }, { status: 404 });
     }

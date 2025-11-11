@@ -4,16 +4,24 @@ import { updateWheelchairAvailability } from "../../../../server/busStore";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { route, destination, wheelchair_available } = body ?? {};
+    const { id, route, destination, wheelchair_available } = body ?? {};
 
-    if (typeof route !== "string" || typeof wheelchair_available !== "boolean") {
+    if (typeof wheelchair_available !== "boolean") {
       return NextResponse.json(
-        { error: "Invalid payload. Expected { route: string, wheelchair_available: boolean, destination?: string }" },
+        { error: "Invalid payload. Expected { id?: string, route?: string, wheelchair_available: boolean, destination?: string }" },
         { status: 400 }
       );
     }
 
-    const updated = updateWheelchairAvailability({ route, destination, wheelchair_available });
+    // Either id or route must be provided
+    if (!id && typeof route !== "string") {
+      return NextResponse.json(
+        { error: "Either 'id' or 'route' must be provided" },
+        { status: 400 }
+      );
+    }
+
+    const updated = updateWheelchairAvailability({ id, route, destination, wheelchair_available });
     if (!updated) {
       return NextResponse.json({ error: "Bus not found" }, { status: 404 });
     }
