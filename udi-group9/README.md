@@ -33,7 +33,46 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Option 1: Deploy via Vercel CLI
+
+1. Install the Vercel CLI globally:
+   ```bash
+   npm i -g vercel
+   ```
+
+2. Deploy your project:
+   ```bash
+   vercel
+   ```
+
+3. Follow the prompts to link your project to Vercel.
+
+4. For production deployment:
+   ```bash
+   vercel --prod
+   ```
+
+### Option 2: Deploy via GitHub Integration
+
+1. Push your code to a GitHub repository.
+
+2. Go to [vercel.com/new](https://vercel.com/new) and sign in with your GitHub account.
+
+3. Import your repository - Vercel will automatically detect it's a Next.js project.
+
+4. Click "Deploy" - Vercel will automatically build and deploy your app.
+
+5. Every push to your main branch will trigger automatic deployments.
+
+### Post-Deployment Notes
+
+- **In-Memory State**: This app uses in-memory state management (`busStore.ts`). State will reset on serverless function cold starts. For production use, consider implementing a database or persistent storage solution.
+
+- **API Routes**: All API routes at `/api/buses/*` are automatically available on your Vercel deployment.
+
+- **Environment Variables**: No environment variables are required for this deployment.
+
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
 command to change data for powershell (windows)
