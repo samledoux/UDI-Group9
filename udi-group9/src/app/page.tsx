@@ -1,4 +1,4 @@
- "use client";
+"use client";
 import { useMemo, useState, useEffect } from "react";
 import { stops, type BusInfo } from "../data/buses";
 
