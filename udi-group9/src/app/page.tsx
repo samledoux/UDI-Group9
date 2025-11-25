@@ -2,8 +2,65 @@
 import { useMemo, useState, useEffect } from "react";
 import { stops, type BusInfo } from "../data/buses";
 
+type RouteDirection = {
+  id: string;
+  label: string;
+  stopIds: string[];
+  destinationMatchers: string[];
+};
+
+type RouteOption = {
+  id: string;
+  label: string;
+  description: string;
+  directions: RouteDirection[];
+};
+
+const stopNameById = stops.reduce<Record<string, string>>((acc, stop) => {
+  acc[stop.id] = stop.name;
+  return acc;
+}, {});
+
+const e1StopsSouthbound = [
+  "stop_northwood",
+  "stop_dcu",
+  "stop_phibsborough",
+  "stop_parnell",
+  "stop_oconnell",
+  "stop_college_green",
+  "stop_bray",
+  "stop_ballywaltrim",
+];
+
+const e1StopsNorthbound = [...e1StopsSouthbound].reverse();
+
+const routeOptions: RouteOption[] = [
+  {
+    id: "E1",
+    label: "E1 • Northwood ↔ Bray/Ballywaltrim",
+    description:
+      "City spine via DCU, Phibsborough, Parnell Square, O'Connell Street, and College Green before branching to Bray/Ballywaltrim.",
+    directions: [
+      {
+        id: "southbound",
+        label: "Southbound to Bray/Ballywaltrim",
+        stopIds: e1StopsSouthbound,
+        destinationMatchers: ["Bray", "Ballywaltrim"],
+      },
+      {
+        id: "northbound",
+        label: "Northbound to Northwood",
+        stopIds: e1StopsNorthbound,
+        destinationMatchers: ["Northwood"],
+      },
+    ],
+  },
+];
+
 export default function Home() {
-  const [selectedStopId, setSelectedStopId] = useState(stops[0]?.id ?? "");
+  const defaultRoute = routeOptions[0];
+  const [selectedDirectionId, setSelectedDirectionId] = useState(defaultRoute?.directions[0]?.id ?? "");
+  const [selectedStopId, setSelectedStopId] = useState(defaultRoute?.directions[0]?.stopIds[0] ?? "");
   const [buses, setBuses] = useState<BusInfo[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -24,19 +81,64 @@ export default function Home() {
     fetchBuses();
   }, []);
 
+  const selectedRoute = defaultRoute;
+  const selectedRouteId = selectedRoute?.id ?? "";
+
+  const selectedDirection = useMemo(
+    () => selectedRoute?.directions.find((direction) => direction.id === selectedDirectionId),
+    [selectedRoute, selectedDirectionId],
+  );
+
+  useEffect(() => {
+    if (!selectedRoute) {
+      return;
+    }
+    if (!selectedRoute.directions.some((direction) => direction.id === selectedDirectionId)) {
+      setSelectedDirectionId(selectedRoute.directions[0]?.id ?? "");
+    }
+  }, [selectedRoute, selectedDirectionId]);
+
+  useEffect(() => {
+    if (!selectedDirection) {
+      return;
+    }
+    if (!selectedDirection.stopIds.includes(selectedStopId)) {
+      setSelectedStopId(selectedDirection.stopIds[0] ?? "");
+    }
+  }, [selectedDirection, selectedStopId]);
+
+  const availableStops = useMemo(() => {
+    if (!selectedDirection) {
+      return [];
+    }
+    return selectedDirection.stopIds
+      .map((stopId) => ({ id: stopId, name: stopNameById[stopId] ?? stopId }))
+      .filter((stop) => Boolean(stop.name));
+  }, [selectedDirection]);
+
   const filteredBuses = useMemo(() => {
+    if (!selectedDirection) {
+      return [];
+    }
+
     // Only show buses that have an ETA for the selected stop
     return buses
-      .map((b) => ({
-        ...b,
+      .filter((bus) => bus.route === selectedRouteId)
+      .filter((bus) =>
+        selectedDirection.destinationMatchers.length === 0
+          ? true
+          : selectedDirection.destinationMatchers.includes(bus.destination),
+      )
+      .map((bus) => ({
+        ...bus,
         etaForSelectedStop:
-          selectedStopId && b.perStopEta[selectedStopId] !== undefined
-            ? b.perStopEta[selectedStopId]
+          selectedStopId && bus.perStopEta[selectedStopId] !== undefined
+            ? bus.perStopEta[selectedStopId]
             : undefined,
       }))
-      .filter((b) => b.etaForSelectedStop !== undefined)
+      .filter((bus) => bus.etaForSelectedStop !== undefined)
       .sort((a, b) => (a.etaForSelectedStop! - b.etaForSelectedStop!));
-  }, [selectedStopId, buses]);
+  }, [selectedRouteId, selectedDirection, selectedStopId, buses]);
 
   return (
     <div className="min-h-screen bg-zinc-50 py-16 font-sans text-zinc-900 dark:bg-black dark:text-zinc-100">
@@ -52,90 +154,50 @@ export default function Home() {
           </p>
         </header>
 
-        {/* Route Map */}
         <section className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">Route Map</h2>
           <div className="flex flex-col gap-6">
-            {/* E1 Route */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-500 text-sm font-semibold text-white">
-                  E1
-                </span>
-                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  Northwood → Bray/Ballywaltrim
-                </span>
+            <div className="flex flex-col gap-3">
+              <div>
+                <p className="text-sm uppercase tracking-wide text-blue-500">Route E1</p>
+                <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+                  Northwood ↔ Bray/Ballywaltrim
+                </h2>
               </div>
-              <div className="ml-4 flex flex-wrap items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-                <span>Northwood</span>
-                <span className="text-blue-500">→</span>
-                <span>DCU</span>
-                <span className="text-blue-500">→</span>
-                <span>Phibsborough</span>
-                <span className="text-blue-500">→</span>
-                <span>Parnell Square</span>
-                <span className="text-blue-500">→</span>
-                <span>O'Connell St</span>
-                <span className="text-blue-500">→</span>
-                <span>College Green</span>
-                <span className="text-blue-500">→</span>
-                <span>Bray</span>
-                <span className="text-blue-500">/</span>
-                <span>Ballywaltrim</span>
+              <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                Serving DCU, Phibsborough, Parnell Square, O&apos;Connell Street, and College Green before running
+                express to Bray/Ballywaltrim. Seat and wheelchair status stream directly from the Arduino on-board.
+              </p>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+                {e1StopsSouthbound.map((stopId, index) => (
+                  <span key={stopId} className="flex items-center gap-2">
+                    {stopNameById[stopId]}
+                    {index !== e1StopsSouthbound.length - 1 && (
+                      <span className="text-blue-500 dark:text-blue-400">→</span>
+                    )}
+                  </span>
+                ))}
               </div>
             </div>
 
-            {/* E2 Route */}
             <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-green-500 text-sm font-semibold text-white">
-                  E2
-                </span>
-                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  Harristown → Dún Laoghaire
-                </span>
-              </div>
-              <div className="ml-4 flex flex-wrap items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-                <span>Harristown</span>
-                <span className="text-green-500">→</span>
-                <span>DCU</span>
-                <span className="text-green-500">→</span>
-                <span>Phibsborough</span>
-                <span className="text-green-500">→</span>
-                <span>Parnell Square</span>
-                <span className="text-green-500">→</span>
-                <span>O'Connell St</span>
-                <span className="text-green-500">→</span>
-                <span>College Green</span>
-                <span className="text-green-500">→</span>
-                <span>Dún Laoghaire</span>
-              </div>
-            </div>
-
-            {/* 29A Route */}
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-500 text-sm font-semibold text-white">
-                  29A
-                </span>
-                <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                  Baldoyle → City Centre
-                </span>
-              </div>
-              <div className="ml-4 flex flex-wrap items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
-                <span>Baldoyle</span>
-                <span className="text-purple-500">→</span>
-                <span>Donaghmede</span>
-                <span className="text-purple-500">→</span>
-                <span>Raheny</span>
-                <span className="text-purple-500">→</span>
-                <span>Clontarf</span>
-                <span className="text-purple-500">→</span>
-                <span>Fairview</span>
-                <span className="text-purple-500">→</span>
-                <span>North Strand</span>
-                <span className="text-purple-500">→</span>
-                <span>O'Connell St</span>
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                Direction
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {selectedRoute?.directions.map((direction) => (
+                  <button
+                    key={direction.id}
+                    type="button"
+                    onClick={() => setSelectedDirectionId(direction.id)}
+                    className={`flex-1 min-w-[180px] rounded-xl border px-4 py-3 text-sm font-medium transition hover:bg-zinc-50 dark:hover:bg-zinc-800 ${
+                      selectedDirectionId === direction.id
+                        ? "border-zinc-900 bg-zinc-900/5 dark:border-zinc-200 dark:bg-zinc-100/5"
+                        : "border-zinc-200 text-zinc-600 dark:border-zinc-800 dark:text-zinc-300"
+                    }`}
+                  >
+                    {direction.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
@@ -152,9 +214,9 @@ export default function Home() {
               onChange={(e) => setSelectedStopId(e.target.value)}
               className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
             >
-              {stops.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
+              {availableStops.map((stop) => (
+                <option key={stop.id} value={stop.id}>
+                  {stop.name}
                 </option>
               ))}
             </select>
