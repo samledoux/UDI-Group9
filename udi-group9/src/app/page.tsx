@@ -277,32 +277,61 @@ export default function Home() {
               // Find the index of the selected stop in the bus route
               const selectedStopIndex = busRouteOrder.indexOf(selectedStopId);
               
-              // Get stops that come AFTER the selected stop (only if selected stop is in route)
+              // Calculate seats available at the selected stop
+              // Add people getting off at all stops before the selected stop
+              let seatsAtSelectedStop = seatsAvailable;
+              if (selectedStopIndex >= 0) {
+                const stopsBeforeSelected = busRouteOrder.slice(0, selectedStopIndex);
+                stopsBeforeSelected.forEach((stopId) => {
+                  seatsAtSelectedStop += bus.peopleGettingOff?.[stopId] || 0;
+                });
+              }
+              seatsAtSelectedStop = Math.min(seatsTotal, Math.max(0, seatsAtSelectedStop)); // Clamp between 0 and total seats
+              
+              // Get all stops that haven't been reached yet (ETA > 0), including stops before selected stop
               const upcomingStops = selectedStopIndex >= 0
                 ? busRouteOrder
-                    .slice(selectedStopIndex + 1) // Only stops after selected stop
-                    .filter((stopId) => bus.perStopEta[stopId] > 0) // Only future stops (ETA > 0)
+                    .filter((stopId) => {
+                      // Include stops that haven't been reached yet (ETA > 0)
+                      // This includes stops before and after the selected stop
+                      return bus.perStopEta[stopId] > 0;
+                    })
                     .map((stopId) => {
                       const eta = bus.perStopEta[stopId];
                       const peopleGettingOff = bus.peopleGettingOff?.[stopId] || 0;
+                      const stopIndex = busRouteOrder.indexOf(stopId);
                       
                       // Calculate seats available when bus reaches this stop
-                      // Start with current available seats
-                      // Add people getting off at all stops between selected stop and this stop (before arriving)
                       let seatsAtStop = seatsAvailable;
-                      const stopsBeforeThis = busRouteOrder.slice(selectedStopIndex + 1, busRouteOrder.indexOf(stopId));
-                      stopsBeforeThis.forEach((prevStopId) => {
-                        seatsAtStop += bus.peopleGettingOff?.[prevStopId] || 0;
-                      });
+                      
+                      if (stopIndex < selectedStopIndex) {
+                        // Stop comes BEFORE selected stop
+                        // Subtract people getting off between this stop and selected stop
+                        // (those people haven't gotten off yet, so fewer seats available)
+                        const stopsBetween = busRouteOrder.slice(stopIndex + 1, selectedStopIndex + 1);
+                        stopsBetween.forEach((prevStopId) => {
+                          seatsAtStop -= bus.peopleGettingOff?.[prevStopId] || 0;
+                        });
+                      } else if (stopIndex > selectedStopIndex) {
+                        // Stop comes AFTER selected stop
+                        // Add people getting off between selected stop and this stop
+                        // (those people will get off, freeing seats)
+                        const stopsBetween = busRouteOrder.slice(selectedStopIndex + 1, stopIndex);
+                        stopsBetween.forEach((prevStopId) => {
+                          seatsAtStop += bus.peopleGettingOff?.[prevStopId] || 0;
+                        });
+                      }
+                      // If stopIndex === selectedStopIndex, seatsAtStop remains seatsAvailable
                       
                       return {
                         stopId,
                         eta,
                         name: stopNameById[stopId] || stopId,
                         peopleGettingOff,
-                        seatsAvailable: seatsAtStop,
+                        seatsAvailable: Math.max(0, seatsAtStop), // Ensure non-negative
                       };
                     })
+                    .sort((a, b) => a.eta - b.eta) // Sort by ETA
                 : [];
 
               return (
@@ -345,11 +374,18 @@ export default function Home() {
                       >
                         {statusLabel}
                       </span>
-                      <span
-                        className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold ${seatColor}`}
-                      >
-                        {seatLabel}
-                      </span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span
+                          className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold ${seatColor}`}
+                        >
+                          {seatLabel}
+                        </span>
+                        {seatsTotal > 0 && (
+                          <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                            {seatsAtSelectedStop} seats at {stopNameById[selectedStopId] || "this stop"}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   
