@@ -14,7 +14,7 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [https://udi-group9.vercel.app](https://udi-group9.vercel.app) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
@@ -87,10 +87,10 @@ Update a specific bus by its unique ID:
 
 ```powershell
 # Update bus E1-001
-curl -Method POST http://localhost:3000/api/buses/wheelchair -ContentType "application/json" -Body '{"id":"E1-001","wheelchair_available":true}'
+curl -Method POST https://udi-group9.vercel.app/api/buses/wheelchair -ContentType "application/json" -Body '{"id":"E1-001","wheelchair_available":true}'
 
 # Update bus E2-003
-curl -Method POST http://localhost:3000/api/buses/wheelchair -ContentType "application/json" -Body '{"id":"E2-003","wheelchair_available":false}'
+curl -Method POST https://udi-group9.vercel.app/api/buses/wheelchair -ContentType "application/json" -Body '{"id":"E2-003","wheelchair_available":false}'
 ```
 
 ```
@@ -110,10 +110,10 @@ Set all seats on a bus to available or unavailable:
 #### By Bus ID (Recommended)
 ```powershell
 # Set all seats to available on bus E1-001
-curl -Method POST http://localhost:3000/api/buses/seats -ContentType "application/json" -Body '{"id":"E1-001","set_all_available":true}'
+curl -Method POST https://udi-group9.vercel.app/api/buses/seats -ContentType "application/json" -Body '{"id":"E1-001","set_all_available":true}'
 
 # Set all seats to unavailable on bus E2-003
-curl -Method POST http://localhost:3000/api/buses/seats -ContentType "application/json" -Body '{"id":"E2-003","set_all_available":false}'
+curl -Method POST https://udi-group9.vercel.app/api/buses/seats -ContentType "application/json" -Body '{"id":"E2-003","set_all_available":false}'
 ```
 
 
@@ -125,7 +125,7 @@ Update individual seats by providing their IDs:
 #### By Bus ID 
 ```powershell
 # Update specific seats on bus E1-001
-curl -Method POST http://localhost:3000/api/buses/seats -ContentType "application/json" -Body '{"id":"E1-001","seats":[{"id":"E1-001-SEAT-1","available":false},{"id":"E1-001-SEAT-2","available":true},{"id":"E1-001-SEAT-3","available":false}]}'
+curl -Method POST https://udi-group9.vercel.app/api/buses/seats -ContentType "application/json" -Body '{"id":"E1-001","seats":[{"id":"E1-001-SEAT-1","available":false},{"id":"E1-001-SEAT-2","available":true},{"id":"E1-001-SEAT-3","available":false}]}'
 ```
 
 
