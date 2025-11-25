@@ -63,6 +63,7 @@ export default function Home() {
   const [selectedStopId, setSelectedStopId] = useState(defaultRoute?.directions[0]?.stopIds[0] ?? "");
   const [buses, setBuses] = useState<BusInfo[]>([]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [expandedBusId, setExpandedBusId] = useState<string | null>(null);
 
   const fetchBuses = async () => {
     setIsRefreshing(true);
@@ -266,38 +267,124 @@ export default function Home() {
                   ? "bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300"
                   : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300";
 
+              const isExpanded = expandedBusId === bus.id;
+              
+              // Determine bus route order by sorting stops by ETA
+              const busRouteOrder = Object.entries(bus.perStopEta)
+                .sort(([_, etaA], [__, etaB]) => etaA - etaB)
+                .map(([stopId]) => stopId);
+              
+              // Find the index of the selected stop in the bus route
+              const selectedStopIndex = busRouteOrder.indexOf(selectedStopId);
+              
+              // Get stops that come AFTER the selected stop (only if selected stop is in route)
+              const upcomingStops = selectedStopIndex >= 0
+                ? busRouteOrder
+                    .slice(selectedStopIndex + 1) // Only stops after selected stop
+                    .filter((stopId) => bus.perStopEta[stopId] > 0) // Only future stops (ETA > 0)
+                    .map((stopId) => {
+                      const eta = bus.perStopEta[stopId];
+                      const peopleGettingOff = bus.peopleGettingOff?.[stopId] || 0;
+                      
+                      // Calculate seats available when bus reaches this stop
+                      // Start with current available seats
+                      // Add people getting off at all stops between selected stop and this stop (before arriving)
+                      let seatsAtStop = seatsAvailable;
+                      const stopsBeforeThis = busRouteOrder.slice(selectedStopIndex + 1, busRouteOrder.indexOf(stopId));
+                      stopsBeforeThis.forEach((prevStopId) => {
+                        seatsAtStop += bus.peopleGettingOff?.[prevStopId] || 0;
+                      });
+                      
+                      return {
+                        stopId,
+                        eta,
+                        name: stopNameById[stopId] || stopId,
+                        peopleGettingOff,
+                        seatsAvailable: seatsAtStop,
+                      };
+                    })
+                : [];
+
               return (
                 <li
                   key={bus.id}
-                  className="flex flex-col gap-3 px-6 py-6 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 px-6 py-6"
                 >
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-lg font-semibold text-zinc-900 dark:border-zinc-700 dark:text-zinc-100">
-                        {bus.route}
-                      </span>
-                      <div>
-                        <p className="text-sm uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
-                          {bus.destination}
-                        </p>
-                        <p className="text-base font-medium text-zinc-800 dark:text-zinc-200">
-                          Arrives in {bus.etaForSelectedStop} min
-                        </p>
+                  <div 
+                    className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between cursor-pointer"
+                    onClick={() => setExpandedBusId(isExpanded ? null : bus.id)}
+                  >
+                    <div className="flex flex-col gap-1 flex-1">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 text-lg font-semibold text-zinc-900 dark:border-zinc-700 dark:text-zinc-100">
+                          {bus.route}
+                        </span>
+                        <div className="flex-1">
+                          <p className="text-sm uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+                            {bus.destination}
+                          </p>
+                          <p className="text-base font-medium text-zinc-800 dark:text-zinc-200">
+                            Arrives in {bus.etaForSelectedStop} min
+                          </p>
+                        </div>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2}
+                          stroke="currentColor"
+                          className={`h-5 w-5 text-zinc-500 transition-transform ${isExpanded ? "rotate-180" : ""}`}
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
                       </div>
                     </div>
+                    <div className="flex flex-col gap-2 sm:items-end">
+                      <span
+                        className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold ${statusColor}`}
+                      >
+                        {statusLabel}
+                      </span>
+                      <span
+                        className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold ${seatColor}`}
+                      >
+                        {seatLabel}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-2 sm:items-end">
-                    <span
-                      className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold ${statusColor}`}
-                    >
-                      {statusLabel}
-                    </span>
-                    <span
-                      className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-sm font-semibold ${seatColor}`}
-                    >
-                      {seatLabel}
-                    </span>
-                  </div>
+                  
+                  {isExpanded && upcomingStops.length > 0 && (
+                    <div className="mt-2 pt-4 border-t border-zinc-200 dark:border-zinc-800">
+                      <h4 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">
+                        Upcoming Stops
+                      </h4>
+                      <ul className="space-y-3">
+                        {upcomingStops.map((stop) => (
+                          <li
+                            key={stop.stopId}
+                            className="flex items-center justify-between py-2 px-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50"
+                          >
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                                {stop.name}
+                              </span>
+                              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                {stop.eta} min
+                              </span>
+                            </div>
+                            <div className="flex flex-col items-end gap-1">
+                              <span className="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                                {stop.peopleGettingOff} {stop.peopleGettingOff === 1 ? "person" : "people"} getting off
+                              </span>
+                              <span className="text-xs font-medium text-zinc-600 dark:text-zinc-400">
+                                {stop.seatsAvailable} seats available
+                              </span>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </li>
               );
             })}

@@ -6,6 +6,7 @@ export type BusInfo = {
   wheelchair_available: boolean;
   perStopEta: Record<string, number>;
   seats: { id: string; available: boolean }[];
+  peopleGettingOff: Record<string, number>;
 };
 
 export type Stop = {
@@ -55,6 +56,15 @@ export const mockBuses: BusInfo[] = [
       stop_bray: 48,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-001-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_northwood: 0,
+      stop_dcu: 3,
+      stop_phibsborough: 5,
+      stop_parnell: 2,
+      stop_oconnell: 7,
+      stop_college_green: 4,
+      stop_bray: 8,
+    },
   },
   {
     id: "E1-002",
@@ -73,6 +83,16 @@ export const mockBuses: BusInfo[] = [
       stop_ballywaltrim: 58,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-002-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_northwood: 0,
+      stop_dcu: 6,
+      stop_phibsborough: 4,
+      stop_parnell: 9,
+      stop_oconnell: 2,
+      stop_college_green: 5,
+      stop_bray: 1,
+      stop_ballywaltrim: 10,
+    },
   },
   {
     id: "E1-003",
@@ -89,6 +109,14 @@ export const mockBuses: BusInfo[] = [
       stop_bray: 53,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-003-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 2,
+      stop_phibsborough: 7,
+      stop_parnell: 3,
+      stop_oconnell: 6,
+      stop_college_green: 4,
+      stop_bray: 9,
+    },
   },
   {
     id: "E1-004",
@@ -106,6 +134,15 @@ export const mockBuses: BusInfo[] = [
       stop_ballywaltrim: 65,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-004-SEAT-${i + 1}`, available: i % 2 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 5,
+      stop_phibsborough: 8,
+      stop_parnell: 1,
+      stop_oconnell: 6,
+      stop_college_green: 3,
+      stop_bray: 2,
+      stop_ballywaltrim: 7,
+    },
   },
   {
     id: "E1-005",
@@ -122,6 +159,14 @@ export const mockBuses: BusInfo[] = [
       stop_bray: 60,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-005-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 4,
+      stop_phibsborough: 9,
+      stop_parnell: 2,
+      stop_oconnell: 5,
+      stop_college_green: 8,
+      stop_bray: 6,
+    },
   },
   {
     id: "E1-006",
@@ -139,6 +184,15 @@ export const mockBuses: BusInfo[] = [
       stop_ballywaltrim: 71,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-006-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 7,
+      stop_phibsborough: 3,
+      stop_parnell: 10,
+      stop_oconnell: 1,
+      stop_college_green: 4,
+      stop_bray: 5,
+      stop_ballywaltrim: 8,
+    },
   },
   {
     id: "E1-007",
@@ -155,6 +209,14 @@ export const mockBuses: BusInfo[] = [
       stop_bray: 67,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-007-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 6,
+      stop_phibsborough: 2,
+      stop_parnell: 9,
+      stop_oconnell: 4,
+      stop_college_green: 7,
+      stop_bray: 3,
+    },
   },
 
   // E2 Route buses - Harristown to Dún Laoghaire
@@ -174,6 +236,15 @@ export const mockBuses: BusInfo[] = [
       stop_dun_laoghaire: 42,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-001-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_harristown: 0,
+      stop_dcu: 4,
+      stop_phibsborough: 6,
+      stop_parnell: 3,
+      stop_oconnell: 8,
+      stop_college_green: 5,
+      stop_dun_laoghaire: 9,
+    },
   },
   {
     id: "E2-002",
@@ -191,6 +262,15 @@ export const mockBuses: BusInfo[] = [
       stop_dun_laoghaire: 44,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-002-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_harristown: 0,
+      stop_dcu: 5,
+      stop_phibsborough: 2,
+      stop_parnell: 7,
+      stop_oconnell: 4,
+      stop_college_green: 6,
+      stop_dun_laoghaire: 10,
+    },
   },
   {
     id: "E2-003",
@@ -207,6 +287,14 @@ export const mockBuses: BusInfo[] = [
       stop_dun_laoghaire: 47,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-003-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 3,
+      stop_phibsborough: 8,
+      stop_parnell: 1,
+      stop_oconnell: 5,
+      stop_college_green: 7,
+      stop_dun_laoghaire: 4,
+    },
   },
   {
     id: "E2-004",
@@ -223,6 +311,14 @@ export const mockBuses: BusInfo[] = [
       stop_dun_laoghaire: 50,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-004-SEAT-${i + 1}`, available: i % 2 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 9,
+      stop_phibsborough: 2,
+      stop_parnell: 6,
+      stop_oconnell: 3,
+      stop_college_green: 8,
+      stop_dun_laoghaire: 1,
+    },
   },
   {
     id: "E2-005",
@@ -239,6 +335,14 @@ export const mockBuses: BusInfo[] = [
       stop_dun_laoghaire: 53,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-005-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 4,
+      stop_phibsborough: 10,
+      stop_parnell: 2,
+      stop_oconnell: 7,
+      stop_college_green: 5,
+      stop_dun_laoghaire: 6,
+    },
   },
   {
     id: "E2-006",
@@ -255,6 +359,14 @@ export const mockBuses: BusInfo[] = [
       stop_dun_laoghaire: 56,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-006-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 1,
+      stop_phibsborough: 9,
+      stop_parnell: 3,
+      stop_oconnell: 6,
+      stop_college_green: 4,
+      stop_dun_laoghaire: 8,
+    },
   },
   {
     id: "E2-007",
@@ -271,6 +383,14 @@ export const mockBuses: BusInfo[] = [
       stop_dun_laoghaire: 59,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-007-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_dcu: 7,
+      stop_phibsborough: 1,
+      stop_parnell: 5,
+      stop_oconnell: 9,
+      stop_college_green: 2,
+      stop_dun_laoghaire: 10,
+    },
   },
 
   // 29A Route buses - Baldoyle to City Centre
@@ -290,6 +410,15 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 28,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-001-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_baldoyle: 0,
+      stop_donaghmede: 4,
+      stop_raheny: 6,
+      stop_clontarf: 2,
+      stop_fairview: 8,
+      stop_north_strand: 5,
+      stop_oconnell: 9,
+    },
   },
   {
     id: "29A-002",
@@ -307,6 +436,15 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 30,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-002-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_baldoyle: 0,
+      stop_donaghmede: 7,
+      stop_raheny: 3,
+      stop_clontarf: 10,
+      stop_fairview: 1,
+      stop_north_strand: 6,
+      stop_oconnell: 4,
+    },
   },
   {
     id: "29A-003",
@@ -323,6 +461,14 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 33,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-003-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_donaghmede: 2,
+      stop_raheny: 8,
+      stop_clontarf: 5,
+      stop_fairview: 3,
+      stop_north_strand: 7,
+      stop_oconnell: 1,
+    },
   },
   {
     id: "29A-004",
@@ -339,6 +485,14 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 36,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-004-SEAT-${i + 1}`, available: i % 2 !== 0 })),
+    peopleGettingOff: {
+      stop_donaghmede: 9,
+      stop_raheny: 4,
+      stop_clontarf: 6,
+      stop_fairview: 2,
+      stop_north_strand: 10,
+      stop_oconnell: 3,
+    },
   },
   {
     id: "29A-005",
@@ -355,6 +509,14 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 39,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-005-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_donaghmede: 5,
+      stop_raheny: 1,
+      stop_clontarf: 8,
+      stop_fairview: 4,
+      stop_north_strand: 7,
+      stop_oconnell: 6,
+    },
   },
   {
     id: "29A-006",
@@ -371,6 +533,14 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 42,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-006-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_donaghmede: 3,
+      stop_raheny: 10,
+      stop_clontarf: 2,
+      stop_fairview: 9,
+      stop_north_strand: 1,
+      stop_oconnell: 8,
+    },
   },
   {
     id: "29A-007",
@@ -387,6 +557,14 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 45,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-007-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_donaghmede: 6,
+      stop_raheny: 2,
+      stop_clontarf: 9,
+      stop_fairview: 5,
+      stop_north_strand: 4,
+      stop_oconnell: 7,
+    },
   },
   
   // Additional buses approaching starting stops (return trips or buses starting journey)
@@ -405,6 +583,13 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 15,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-008-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_northwood: 8,
+      stop_dcu: 3,
+      stop_phibsborough: 6,
+      stop_parnell: 4,
+      stop_oconnell: 2,
+    },
   },
   {
     id: "E1-009",
@@ -420,6 +605,13 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 19,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-009-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_northwood: 5,
+      stop_dcu: 10,
+      stop_phibsborough: 1,
+      stop_parnell: 7,
+      stop_oconnell: 3,
+    },
   },
   {
     id: "E1-010",
@@ -435,6 +627,13 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 23,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E1-010-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_northwood: 4,
+      stop_dcu: 8,
+      stop_phibsborough: 2,
+      stop_parnell: 9,
+      stop_oconnell: 6,
+    },
   },
   
   // Buses approaching Harristown (E2 return trips)
@@ -452,6 +651,13 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 16,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-008-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_harristown: 7,
+      stop_dcu: 2,
+      stop_phibsborough: 5,
+      stop_parnell: 8,
+      stop_oconnell: 1,
+    },
   },
   {
     id: "E2-009",
@@ -467,6 +673,13 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 20,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-009-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_harristown: 3,
+      stop_dcu: 9,
+      stop_phibsborough: 4,
+      stop_parnell: 6,
+      stop_oconnell: 10,
+    },
   },
   {
     id: "E2-010",
@@ -482,6 +695,13 @@ export const mockBuses: BusInfo[] = [
       stop_oconnell: 25,
     },
     seats: Array.from({ length: 45 }, (_, i) => ({ id: `E2-010-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_harristown: 6,
+      stop_dcu: 1,
+      stop_phibsborough: 8,
+      stop_parnell: 4,
+      stop_oconnell: 2,
+    },
   },
   
   // Buses approaching Baldoyle (29A return trips)
@@ -499,6 +719,13 @@ export const mockBuses: BusInfo[] = [
       stop_fairview: 22,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-008-SEAT-${i + 1}`, available: i % 3 !== 0 })),
+    peopleGettingOff: {
+      stop_baldoyle: 9,
+      stop_donaghmede: 5,
+      stop_raheny: 3,
+      stop_clontarf: 7,
+      stop_fairview: 1,
+    },
   },
   {
     id: "29A-009",
@@ -514,6 +741,13 @@ export const mockBuses: BusInfo[] = [
       stop_fairview: 26,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-009-SEAT-${i + 1}`, available: i % 4 !== 0 })),
+    peopleGettingOff: {
+      stop_baldoyle: 2,
+      stop_donaghmede: 8,
+      stop_raheny: 4,
+      stop_clontarf: 6,
+      stop_fairview: 10,
+    },
   },
   {
     id: "29A-010",
@@ -529,6 +763,13 @@ export const mockBuses: BusInfo[] = [
       stop_fairview: 31,
     },
     seats: Array.from({ length: 40 }, (_, i) => ({ id: `29A-010-SEAT-${i + 1}`, available: i % 5 !== 0 })),
+    peopleGettingOff: {
+      stop_baldoyle: 7,
+      stop_donaghmede: 1,
+      stop_raheny: 9,
+      stop_clontarf: 3,
+      stop_fairview: 5,
+    },
   },
 ];
 

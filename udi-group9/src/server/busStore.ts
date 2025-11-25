@@ -68,4 +68,42 @@ export function updateSeats(params: {
   return { ...buses[index] };
 }
 
+export function incrementAlighting(params: {
+  id?: string;
+  route?: string;
+  destination?: string;
+  stopId: string;
+}): BusInfo | null {
+  const { id, route, destination, stopId } = params;
+  let index = -1;
+  
+  // If ID is provided, use it for lookup (most specific)
+  if (id) {
+    index = buses.findIndex((b) => b.id === id);
+  } else if (route) {
+    // Fallback to route + destination lookup (backward compatibility)
+    index = buses.findIndex((b) =>
+      destination ? b.route === route && b.destination === destination : b.route === route
+    );
+  }
+  
+  if (index === -1) {
+    return null;
+  }
+  
+  // Initialize peopleGettingOff if it doesn't exist, then increment
+  if (!buses[index].peopleGettingOff) {
+    buses[index].peopleGettingOff = {};
+  }
+  const currentCount = buses[index].peopleGettingOff[stopId] || 0;
+  buses[index] = {
+    ...buses[index],
+    peopleGettingOff: {
+      ...buses[index].peopleGettingOff,
+      [stopId]: currentCount + 1,
+    },
+  };
+  return { ...buses[index] };
+}
+
 
