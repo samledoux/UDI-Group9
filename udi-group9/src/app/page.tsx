@@ -278,12 +278,18 @@ export default function Home() {
               const selectedStopIndex = busRouteOrder.indexOf(selectedStopId);
               
               // Calculate seats available at the selected stop
-              // Add people getting off at all stops before the selected stop
+              // Add people getting off at all stops before the selected stop that haven't been reached yet
               let seatsAtSelectedStop = seatsAvailable;
               if (selectedStopIndex >= 0) {
                 const stopsBeforeSelected = busRouteOrder.slice(0, selectedStopIndex);
                 stopsBeforeSelected.forEach((stopId) => {
-                  seatsAtSelectedStop += bus.peopleGettingOff?.[stopId] || 0;
+                  // Only add people getting off at stops that haven't been reached yet (ETA > 0)
+                  // If ETA <= 0, the bus has already passed that stop, and those seats are already
+                  // reflected in seatsAvailable, so we shouldn't double-count them
+                  const eta = bus.perStopEta[stopId];
+                  if (eta > 0) {
+                    seatsAtSelectedStop += bus.peopleGettingOff?.[stopId] || 0;
+                  }
                 });
               }
               seatsAtSelectedStop = Math.min(seatsTotal, Math.max(0, seatsAtSelectedStop)); // Clamp between 0 and total seats
