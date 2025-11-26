@@ -271,7 +271,7 @@ export default function Home() {
               
               // Determine bus route order by sorting stops by ETA
               const busRouteOrder = Object.entries(bus.perStopEta)
-                .sort(([_, etaA], [__, etaB]) => etaA - etaB)
+                .sort(([_, etaA], [__, etaB]) => (etaA as number) - (etaB as number))
                 .map(([stopId]) => stopId);
               
               // Find the index of the selected stop in the bus route
