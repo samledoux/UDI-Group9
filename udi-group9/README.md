@@ -136,3 +136,45 @@ curl -Method POST https://udi-group9.vercel.app/api/buses/seats -ContentType "ap
 - Using bus ID is recommended when you want to update a specific bus
 - You can update multiple seats in a single request by including them all in the `seats` array
 - The `destination` parameter is optional but recommended when multiple buses share the same route
+
+
+example processing code to change wheelchair status:
+
+import http.requests.*;
+
+void setup() {
+  size(400, 200);
+  
+  // Update these values
+  String busId = "E1-001";
+  boolean wheelchairAvailable = false;
+  
+  // Make the POST request
+  updateWheelchairAvailability(busId, wheelchairAvailable);
+}
+
+void updateWheelchairAvailability(String busId, boolean available) {
+  String url = "https://udi-group9.vercel.app/api/buses/wheelchair";
+  
+  // Create JSON body
+  String jsonBody = "{\"id\":\"" + busId + "\",\"wheelchair_available\":" + available + "}";
+  
+  // Create POST request
+  PostRequest post = new PostRequest(url);
+  post.addHeader("Content-Type", "application/json");
+  post.addData(jsonBody);
+  
+  // Send request
+  post.send();
+  
+  // Print response
+  println("Response: " + post.getContent());
+  
+  // Check if response contains success indicators
+  String response = post.getContent();
+  if (response.contains("\"ok\":true") || response.contains("bus")) {
+    println("Success! Wheelchair availability updated.");
+  } else {
+    println("Check the response above for details.");
+  }
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA Icon Generator</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    canvas {
+      border: 1px solid #ddd;
+      margin: 20px 0;
+      display: block;
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 5px;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    .info {
+      background: #e0f2fe;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      color: #0369a1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PWA Icon Generator</h1>
+    <div class="info">
+      <p><strong>Instructions:</strong></p>
+      <ol>
+        <li>Click "Generate Icons" to render the SVG icon</li>
+        <li>Right-click each canvas and select "Save image as..."</li>
+        <li>Save as <code>icon-192x192.png</code> and <code>icon-512x512.png</code> in the <code>public</code> folder</li>
+      </ol>
+    </div>
+    
+    <div>
+      <h2>192x192 Icon</h2>
+      <canvas id="canvas192" width="192" height="192"></canvas>
+      <button onclick="downloadIcon(192)">Download 192x192</button>
+    </div>
+    
+    <div style="margin-top: 40px;">
+      <h2>512x512 Icon</h2>
+      <canvas id="canvas512" width="512" height="512"></canvas>
+      <button onclick="downloadIcon(512)">Download 512x512</button>
+    </div>
+    
+    <button onclick="generateIcons()" style="margin-top: 30px; padding: 15px 30px; font-size: 18px;">Generate Icons</button>
+  </div>
+
+  <script>
+    const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+      <rect width="512" height="512" rx="80" fill="#3b82f6"/>
+      <rect x="80" y="180" width="352" height="200" rx="20" fill="#ffffff"/>
+      <rect x="120" y="200" width="80" height="60" rx="8" fill="#3b82f6" opacity="0.3"/>
+      <rect x="220" y="200" width="80" height="60" rx="8" fill="#3b82f6" opacity="0.3"/>
+      <rect x="320" y="200" width="80" height="60" rx="8" fill="#3b82f6" opacity="0.3"/>
+      <rect x="420" y="220" width="40" height="140" rx="8" fill="#3b82f6"/>
+      <circle cx="160" cy="380" r="30" fill="#1e293b"/>
+      <circle cx="160" cy="380" r="20" fill="#3b82f6"/>
+      <circle cx="360" cy="380" r="30" fill="#1e293b"/>
+      <circle cx="360" cy="380" r="20" fill="#3b82f6"/>
+      <text x="256" y="140" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="#ffffff" text-anchor="middle">E1</text>
+    </svg>`;
+
+    function generateIcons() {
+      renderIcon(192, 'canvas192');
+      renderIcon(512, 'canvas512');
+    }
+
+    function renderIcon(size, canvasId) {
+      const canvas = document.getElementById(canvasId);
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+      
+      img.onload = function() {
+        ctx.clearRect(0, 0, size, size);
+        ctx.drawImage(img, 0, 0, size, size);
+        URL.revokeObjectURL(url);
+      };
+      
+      img.src = url;
+    }
+
+    function downloadIcon(size) {
+      const canvas = document.getElementById(`canvas${size}`);
+      canvas.toBlob(function(blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `icon-${size}x${size}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    }
+
+    // Auto-generate on load
+    window.onload = generateIcons;
+  </script>
+</body>
+</html>
+
