@@ -45,7 +45,7 @@ export const mockBuses: BusInfo[] = [
     route: "E1",
     destination: "Bray",
     etaMinutes: 3,
-    wheelchair_available: true,
+    wheelchair_available: false,
     perStopEta: {
       stop_northwood: 0,
       stop_dcu: 3,
