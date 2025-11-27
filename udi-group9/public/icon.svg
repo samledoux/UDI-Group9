@@ -19,7 +19,5 @@
   <circle cx="360" cy="380" r="30" fill="#1e293b"/>
   <circle cx="360" cy="380" r="20" fill="#3b82f6"/>
   
-  <!-- Route indicator (E1) -->
-  <text x="256" y="140" font-family="Arial, sans-serif" font-size="80" font-weight="bold" fill="#ffffff" text-anchor="middle">E1</text>
 </svg>
 

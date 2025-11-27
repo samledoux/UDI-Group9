@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Campus Bus Tracker",
+  title: "UDI TFI Live",
   description: "Live bus departures with real-time wheelchair and seat availability",
   manifest: "/manifest.json",
   themeColor: "#3b82f6",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Bus Tracker",
+    title: "UDI TFI Live",
   },
   icons: {
     icon: [
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   other: {
     "apple-mobile-web-app-capable": "yes",
     "apple-mobile-web-app-status-bar-style": "default",
-    "apple-mobile-web-app-title": "Bus Tracker",
+    "apple-mobile-web-app-title": "UDI TFI Live",
   },
 };
 

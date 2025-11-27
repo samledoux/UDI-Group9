@@ -1,4 +1,4 @@
-# Campus Bus Tracker - App Logic Explanation
+# UDI TFI Live - App Logic Explanation
 
 ## Overview
 This is a real-time bus tracking application that displays:

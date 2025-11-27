@@ -148,7 +148,7 @@ export default function Home() {
           <p className="text-sm uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
             Live Departures
           </p>
-          <h1 className="text-4xl font-bold">Campus Bus Tracker</h1>
+          <h1 className="text-4xl font-bold">UDI TFI Live</h1>
           <p className="text-base text-zinc-600 dark:text-zinc-400">
             Check when the next buses arrive and whether the wheelchair space
             is currently available.

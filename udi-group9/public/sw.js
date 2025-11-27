@@ -1,5 +1,5 @@
-// Service Worker for Campus Bus Tracker PWA
-const CACHE_NAME = 'campus-bus-tracker-v1';
+// Service Worker for UDI TFI Live PWA
+const CACHE_NAME = 'udi-tfi-live-v1';
 const urlsToCache = [
   '/',
   '/manifest.json',

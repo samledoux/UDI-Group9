@@ -1,6 +1,6 @@
 {
-  "name": "Campus Bus Tracker",
-  "short_name": "Bus Tracker",
+  "name": "UDI TFI Live",
+  "short_name": "UDI TFI Live",
   "description": "Live bus departures with real-time wheelchair and seat availability",
   "start_url": "/",
   "display": "standalone",
