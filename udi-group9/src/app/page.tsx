@@ -277,22 +277,13 @@ export default function Home() {
               // Find the index of the selected stop in the bus route
               const selectedStopIndex = busRouteOrder.indexOf(selectedStopId);
               
-              // Calculate seats available at the selected stop
-              // Add people getting off at all stops before the selected stop that haven't been reached yet
-              let seatsAtSelectedStop = seatsAvailable;
-              if (selectedStopIndex >= 0) {
-                const stopsBeforeSelected = busRouteOrder.slice(0, selectedStopIndex);
-                stopsBeforeSelected.forEach((stopId) => {
-                  // Only add people getting off at stops that haven't been reached yet (ETA > 0)
-                  // If ETA <= 0, the bus has already passed that stop, and those seats are already
-                  // reflected in seatsAvailable, so we shouldn't double-count them
-                  const eta = bus.perStopEta[stopId];
-                  if (eta > 0) {
-                    seatsAtSelectedStop += bus.peopleGettingOff?.[stopId] || 0;
-                  }
-                });
-              }
-              seatsAtSelectedStop = Math.min(seatsTotal, Math.max(0, seatsAtSelectedStop)); // Clamp between 0 and total seats
+              // Calculate a simple seat tally for the selected stop:
+              // take the total seat count (45) and subtract the currently available seats.
+              // This ensures the number shown under the chip aligns with the headline chip.
+              const seatsAtSelectedStop =
+                seatsTotal > 0
+                  ? Math.max(0, seatsTotal - seatsAvailable)
+                  : 0;
               
               // Get all stops that haven't been reached yet (ETA > 0), including stops before selected stop
               const upcomingStops = selectedStopIndex >= 0
@@ -388,7 +379,7 @@ export default function Home() {
                         </span>
                         {seatsTotal > 0 && (
                           <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                            {seatsAtSelectedStop} seats at {stopNameById[selectedStopId] || "this stop"}
+                        {seatsAtSelectedStop} seats currently occupied at {stopNameById[selectedStopId] || "this stop"}
                           </span>
                         )}
                       </div>
