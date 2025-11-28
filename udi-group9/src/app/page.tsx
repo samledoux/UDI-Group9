@@ -16,6 +16,14 @@ type RouteOption = {
   directions: RouteDirection[];
 };
 
+type SouthboundStopStat = {
+  stopId: string;
+  name: string;
+  eta: number;
+  peopleBefore: number;
+  peopleAtStop: number;
+};
+
 const stopNameById = stops.reduce<Record<string, string>>((acc, stop) => {
   acc[stop.id] = stop.name;
   return acc;
@@ -89,6 +97,7 @@ export default function Home() {
     () => selectedRoute?.directions.find((direction) => direction.id === selectedDirectionId),
     [selectedRoute, selectedDirectionId],
   );
+  const isSouthboundE1 = selectedRouteId === "E1" && selectedDirection?.id === "southbound";
 
   useEffect(() => {
     if (!selectedRoute) {
@@ -284,19 +293,30 @@ export default function Home() {
                 seatsTotal > 0
                   ? Math.max(0, seatsTotal - seatsAvailable)
                   : 0;
-              
-              const peopleDisembarkingBeforeSelectedStop =
-                selectedStopIndex > 0
-                  ? busRouteOrder
-                      .slice(0, selectedStopIndex)
-                      .reduce((sum, stopId) => {
-                        const eta = bus.perStopEta[stopId];
-                        if (typeof eta !== "number" || eta <= 0) {
-                          return sum;
-                        }
-                        return sum + (bus.peopleGettingOff?.[stopId] ?? 0);
-                      }, 0)
-                  : 0;
+
+              let cumulativeDisembarking = 0;
+              const southboundStopStats = isSouthboundE1
+                ? e1StopsSouthbound.reduce<SouthboundStopStat[]>((acc, stopId) => {
+                    const eta = bus.perStopEta[stopId];
+                    if (typeof eta !== "number" || eta <= 0) {
+                      return acc;
+                    }
+                    const peopleAtStop = bus.peopleGettingOff?.[stopId] ?? 0;
+                    acc.push({
+                      stopId,
+                      name: stopNameById[stopId] || stopId,
+                      eta,
+                      peopleBefore: cumulativeDisembarking,
+                      peopleAtStop,
+                    });
+                    cumulativeDisembarking += peopleAtStop;
+                    return acc;
+                  }, [])
+                : [];
+
+              const peopleDisembarkingBeforeSelectedStop = isSouthboundE1
+                ? southboundStopStats.find((stop) => stop.stopId === selectedStopId)?.peopleBefore ?? 0
+                : 0;
               
               // Get all stops that haven't been reached yet (ETA > 0), including stops before selected stop
               const upcomingStops = selectedStopIndex >= 0
@@ -390,10 +410,18 @@ export default function Home() {
                         >
                           {seatLabel}
                         </span>
-                        <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                          {peopleDisembarkingBeforeSelectedStop}{" "}
-                          {peopleDisembarkingBeforeSelectedStop === 1 ? "person" : "people"} disembarking before your stop
-                        </span>
+                        {isSouthboundE1 ? (
+                          <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                            {peopleDisembarkingBeforeSelectedStop}{" "}
+                            {peopleDisembarkingBeforeSelectedStop === 1 ? "person" : "people"} disembarking before your stop
+                          </span>
+                        ) : (
+                          seatsTotal > 0 && (
+                            <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                              {seatsAtSelectedStop} seats currently occupied at {stopNameById[selectedStopId] || "this stop"}
+                            </span>
+                          )
+                        )}
                       </div>
                     </div>
                   </div>
@@ -425,6 +453,35 @@ export default function Home() {
                                 {stop.seatsAvailable} seats available
                               </span>
                             </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {isExpanded && isSouthboundE1 && southboundStopStats.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-dashed border-zinc-200 dark:border-zinc-800">
+                      <h4 className="text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">
+                        Southbound E1 offload forecast
+                      </h4>
+                      <ul className="grid gap-3 sm:grid-cols-2">
+                        {southboundStopStats.map((stop) => (
+                          <li
+                            key={stop.stopId}
+                            className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/40"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex flex-col">
+                                <span className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{stop.name}</span>
+                                <span className="text-xs text-zinc-500 dark:text-zinc-400">{stop.eta} min</span>
+                              </div>
+                              <span className="text-xs font-semibold text-blue-600 dark:text-blue-300">
+                                {stop.peopleBefore} {stop.peopleBefore === 1 ? "person" : "people"} before
+                              </span>
+                            </div>
+                            <p className="mt-2 text-xs text-zinc-600 dark:text-zinc-400">
+                              {stop.peopleAtStop} {stop.peopleAtStop === 1 ? "person" : "people"} getting off at this stop
+                            </p>
                           </li>
                         ))}
                       </ul>
