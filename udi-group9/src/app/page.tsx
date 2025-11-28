@@ -285,6 +285,19 @@ export default function Home() {
                   ? Math.max(0, seatsTotal - seatsAvailable)
                   : 0;
               
+              const peopleDisembarkingBeforeSelectedStop =
+                selectedStopIndex > 0
+                  ? busRouteOrder
+                      .slice(0, selectedStopIndex)
+                      .reduce((sum, stopId) => {
+                        const eta = bus.perStopEta[stopId];
+                        if (typeof eta !== "number" || eta <= 0) {
+                          return sum;
+                        }
+                        return sum + (bus.peopleGettingOff?.[stopId] ?? 0);
+                      }, 0)
+                  : 0;
+              
               // Get all stops that haven't been reached yet (ETA > 0), including stops before selected stop
               const upcomingStops = selectedStopIndex >= 0
                 ? busRouteOrder
@@ -377,11 +390,10 @@ export default function Home() {
                         >
                           {seatLabel}
                         </span>
-                        {seatsTotal > 0 && (
-                          <span className="text-xs text-zinc-600 dark:text-zinc-400">
-                        {seatsAtSelectedStop} seats currently occupied at {stopNameById[selectedStopId] || "this stop"}
-                          </span>
-                        )}
+                        <span className="text-xs text-zinc-600 dark:text-zinc-400">
+                          {peopleDisembarkingBeforeSelectedStop}{" "}
+                          {peopleDisembarkingBeforeSelectedStop === 1 ? "person" : "people"} disembarking before your stop
+                        </span>
                       </div>
                     </div>
                   </div>
