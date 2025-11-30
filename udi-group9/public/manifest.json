@@ -1,6 +1,6 @@
 {
-  "name": "UDI TFI Live",
-  "short_name": "UDI TFI Live",
+  "name": "ClearPath",
+  "short_name": "ClearPath",
   "description": "Live bus departures with real-time wheelchair and seat availability",
   "start_url": "/",
   "display": "standalone",
