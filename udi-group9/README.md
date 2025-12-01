@@ -1,5 +1,13 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+
+
+
+
+Commits done off bolgerru were off a cursor pro borrowed account to access more features for the project. 
+
+rest of commits done off two seperate smaledoux accounts to acess free limited features.
+
 ## Getting Started
 
 First, run the development server:

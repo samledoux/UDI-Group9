@@ -7,6 +7,8 @@ This is a real-time bus tracking application that displays:
 - Wheelchair space availability
 - **Predicted seat availability** at future stops based on passenger alighting data
 
+Made up data for ease of showing for project but set up for **one** bus - E1 southbnound
+
 ---
 
 ## Architecture Overview
